@@ -1,398 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dhoomketu.Space - the comet tales</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dhoomketu.Space - the comet tales</title>
 
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <!-- GSAP for smooth motion -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-<style>
-/* ---------------------------------------------------
-   BASE DESIGN
----------------------------------------------------*/
-:root {
-    --bg: #0A0A0A;
-    --card: #111111;
-    --card-glow: rgba(255, 170, 60, 0.25);
-    --text: #F5F5F5;
-    --amber: #ffb35c;
-    --amber-glow: 0 0 30px rgba(251, 146, 7, 0.8);
-    --soft-amber: rgba(186, 133, 59, 0.58);
-    --radius: 20px;
-    --transition: 0.3s ease;
-    font-family: "Inter", sans-serif;
-}
+  <style>
+  /* =========================
+     BASE / THEME
+     ========================= */
+  :root{
+    --bg:#0A0A0A;
+    --card:#111111;
+    --amber:#ffb35c;
+    --amber-glow:0 0 30px rgba(251,146,7,0.8);
+    --soft-amber:rgba(186,133,59,0.58);
+    --text:#F5F5F5;
+    --radius:18px;
+    --transition:0.32s ease;
+    --max-width:1200px;
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+  }
+  a{color:inherit; text-decoration:none}
 
-* {margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth;}
-body {background:var(--bg); color:var(--text); overflow-x:hidden;}
+  /* Responsive typography (clamp) */
+  h1,h2,h3{margin:0}
+  .hero-title{font-size:clamp(28px,4.5vw,64px); line-height:1.05; font-weight:800}
+  .section-title{font-size:clamp(22px,3.2vw,48px); font-weight:700}
+  p{margin:0}
 
+  .container{
+    max-width:var(--max-width); margin:0 auto; padding:0 20px;
+  }
 
-/* ---------------------------------------------------
-   NAVBAR
---------------------------------------------------- */
-.navbar {
-    position: fixed;
-    width: 100%;
-    padding: 18px 60px;
-    z-index: 9999;
-    background: rgba(10, 10, 10, 0.65);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 170, 80, 0.1);
-}
-.nav-container {max-width:1400px; margin:auto; display:flex; justify-content:space-between; align-items:center;}
-.logo {font-size:25px; font-weight:600; color:var(--amber); text-shadow:var(--amber-glow);}
-.nav-links {display:flex; gap:25px; list-style:none;}
-.nav-links a {color:#f9d5abff; font-size:20px; text-decoration:none; transition:var(--transition);}
-.nav-links a:hover {color:var(--amber); text-shadow:var(--amber-glow);}
+  /* =========================
+     NAVBAR
+     ========================= */
+  .navbar{
+    position:fixed; left:0; right:0; top:0;
+    background:rgba(10,10,10,0.66); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,170,80,0.06);
+    z-index:1200; padding:14px 0;
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+    max-width:var(--max-width); margin:0 auto; padding:0 18px;
+  }
 
+  .logo{font-weight:700; font-size:clamp(18px,2.2vw,26px); color:var(--amber); text-shadow:var(--amber-glow)}
+  .nav-links{display:flex; gap:22px; align-items:center; list-style:none; margin:0; padding:0}
+  .nav-links a{font-size:clamp(14px,1.6vw,20px); color:#f9d5ab; padding:6px 8px; border-radius:10px; transition:var(--transition)}
+  .nav-links a:hover{color:var(--amber); text-shadow:var(--amber-glow); background:rgba(255,180,80,0.03)}
 
-/* ---------------------------------------------------
-   HERO (Desktop Default)
---------------------------------------------------- */
-.hero {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 160px 10% 120px;
-    min-height: 100vh;
-}
-.hero-left {max-width:600px;}
-.hero-title {font-size:64px; font-weight:800; line-height:1.1;}
-.hero-subtext {margin-top:20px; opacity:0.75; font-size:20px; line-height:1.6;}
-.hero-buttons {margin-top:35px; display:flex; gap:20px;}
-.btn-primary,
-.btn-secondary {padding:14px 30px; font-size:18px; border-radius:var(--radius); cursor:pointer; border:none;}
-.btn-primary {background:var(--amber); color:black; font-weight:600; box-shadow:0 0 20px rgba(255, 180, 80, 0.5);}
-.btn-primary:hover {background:#ffcf8e; box-shadow:0 0 35px rgba(255, 180, 80, 0.8);}
-.btn-secondary {background:#1a1a1a; border:1px solid rgba(255, 180, 80, 0.3); color:var(--amber);}
-.btn-secondary:hover {background:#222;}
+  /* Hamburger (hidden on desktop) */
+  .hamburger{
+    width:44px; height:38px; display:none; position:relative; cursor:pointer;
+    background:transparent; border:none; padding:0;
+  }
+  .hamburger .bar{
+    position:absolute; left:8px; right:8px; height:3px; background:var(--text);
+    border-radius:3px; transform-origin:center; transition:transform 300ms ease, opacity 300ms ease, top 300ms ease;
+  }
+  .hamburger .bar.bar1{top:10px}
+  .hamburger .bar.bar2{top:17.5px}
+  .hamburger .bar.bar3{top:25px}
 
-.hero-right {width:500px; height:500px;}
-#hologramGlobe {width:100%; height:100%;}
+  .hamburger.open .bar1{transform:translateY(7.5px) rotate(45deg)}
+  .hamburger.open .bar2{opacity:0}
+  .hamburger.open .bar3{transform:translateY(-7.5px) rotate(-45deg)}
 
+  /* =========================
+     DRAWER MENU (SIDE) & OVERLAY
+     ========================= */
+  .drawer-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.45); opacity:0; visibility:hidden;
+    transition:opacity 240ms ease, visibility 240ms ease; z-index:1100;
+  }
+  .drawer-overlay.show{opacity:1; visibility:visible}
 
-/* ---------------------------------------------------
-   SECTION DIVIDER
---------------------------------------------------- */
-.divider-glow {width:100%; height:100px; background:radial-gradient(circle, rgba(87, 51, 3, 0.84), transparent 60%);}
+  .drawer{
+    position:fixed; left:0; top:0; height:100vh; width:300px;
+    max-width:80vw; background:linear-gradient(180deg,#0f0f0f 0%, #0b0b0b 100%);
+    box-shadow: 6px 0 30px rgba(0,0,0,0.6);
+    transform:translateX(-110%); transition:transform 320ms cubic-bezier(.2,.9,.2,1); z-index:1150;
+    padding:28px 20px;
+    display:flex; flex-direction:column; gap:18px;
+  }
+  .drawer.show{transform:translateX(0%)}
 
+  .drawer .close-area{display:flex; justify-content:space-between; align-items:center;}
+  .drawer .menu-links{display:flex; flex-direction:column; gap:12px; margin-top:12px}
+  .drawer .menu-links a{
+    font-size:18px; color:var(--text); padding:12px 10px; border-radius:10px;
+    transition:background 180ms ease, color 180ms ease;
+  }
+  .drawer .menu-links a:hover{background:rgba(255,180,80,0.06); color:var(--amber)}
 
-/* ---------------------------------------------------
-   FEATURES
---------------------------------------------------- */
-.section {padding:120px 10%;}
-.section-title {font-size:48px; font-weight:700;}
-.section-sub {margin-top:10px; font-size:20px; opacity:0.75;}
-.features-grid {
-    margin-top:60px; display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
-    gap:35px;
-}
-.feature-card {
-    padding:30px; background:var(--card); border-radius:var(--radius);
-    border:1px solid rgba(104,66,17,0.77);
-    box-shadow:inset 0 0 30px rgba(255,180,80,0.08);
-    transition:var(--transition);
-}
-.feature-card:hover {box-shadow:0 0 30px rgba(255,180,80,0.3); transform:translateY(-5px);}
-.card-graphic {margin-top:40px; height:60px; background:radial-gradient(circle, var(--soft-amber), transparent 70%); border-radius:var(--radius);}
+  /* =========================
+     HERO
+     ========================= */
+  .hero{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:30px; min-height:100vh; padding:140px 0 90px;
+  }
+  .hero-left{flex:1; max-width:680px}
+  .hero-right{width:500px; height:500px; flex:0 0 500px; display:flex; align-items:center; justify-content:center}
+  #hologramGlobe{width:100%; height:100%; display:block}
 
+  .hero-subtext{margin-top:18px; opacity:0.78; font-size:clamp(14px,1.6vw,20px); line-height:1.6}
+  .hero-buttons{margin-top:28px; display:flex; gap:16px; align-items:center; flex-wrap:wrap}
+  .btn{padding:12px 26px; border-radius:14px; font-weight:600; font-size:15px; cursor:pointer; border:none}
+  .btn-primary{background:var(--amber); color:#000; box-shadow:0 0 18px rgba(255,180,80,0.35)}
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-secondary{background:transparent; border:1px solid rgba(255,180,80,0.22); color:var(--amber)}
 
-/* ---------------------------------------------------
-   ABOUT
---------------------------------------------------- */
-.stack-grid {display:grid; grid-template-columns:repeat(auto-fit, minmax(420px,1fr)); gap:60px;}
-.stack-card {
-    padding:60px; border-radius:var(--radius);
-    background:var(--card); border:1px solid rgba(142,99,44,0.85);
-    box-shadow:inset 0 0 30px rgba(95,65,27,0.89);
-}
+  /* =========================
+     SECTIONS / CARDS / CONTACT / FOOTER
+     ========================= */
+  .section{padding:100px 0}
+  .features-grid{display:grid; gap:26px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .feature-card{background:var(--card); padding:22px; border-radius:14px; border:1px solid rgba(104,66,17,0.5)}
+  .card-graphic{margin-top:16px; height:58px; border-radius:12px; background:radial-gradient(circle,var(--soft-amber), transparent 70%)}
 
+  .stack-card{background:var(--card); padding:36px; border-radius:14px; border:1px solid rgba(142,99,44,0.6)}
+  .sunrise-section{text-align:center; padding:120px 0; position:relative; overflow:hidden}
+  .sunrise-glow{position:absolute; bottom:-120px; left:50%; transform:translateX(-50%); width:760px; height:760px; background:radial-gradient(circle, rgba(255,150,50,0.35), transparent 70%); filter:blur(60px)}
 
-/* ---------------------------------------------------
-   SUNRISE SECTION
---------------------------------------------------- */
-.sunrise-section {text-align:center; padding:160px 10%; position:relative; overflow:hidden;}
-.sunrise-title {font-size:64px; font-weight:800;}
-.sunrise-sub {opacity:0.75; font-size:20px; max-width:800px; margin:20px auto;}
-.sunrise-glow {
-    position:absolute; bottom:-100px; left:50%; transform:translateX(-50%);
-    width:900px; height:900px;
-    background:radial-gradient(circle, rgba(255,150,50,0.4), transparent 70%);
-    filter:blur(60px);
-}
+  .contact-section{padding:80px 0; text-align:center}
+  .contact-form{max-width:520px; margin:28px auto 0; display:flex; flex-direction:column; gap:14px}
+  .contact-form input, .contact-form textarea{
+    padding:14px; border-radius:12px; background:#0f0f0f; border:1px solid rgba(255,180,80,0.12); color:var(--text); font-size:15px;
+  }
+  /* Fixed contact button styling (the user's issue): */
+  .contact-form button{
+    padding:12px 18px; border-radius:12px; border:none; font-weight:700; cursor:pointer;
+    background:var(--amber); color:#000; box-shadow:0 6px 20px rgba(255,180,80,0.18); transition:transform 160ms ease;
+  }
+  .contact-form button:hover{transform:translateY(-2px)}
 
+  .footer{padding:48px 0; text-align:center; opacity:0.6}
 
-/* ---------------------------------------------------
-   CONTACT
---------------------------------------------------- */
-.contact-section {padding:120px 10%; text-align:center;}
-.contact-section form {margin-top:40px; display:flex; flex-direction:column; gap:20px; max-width:500px; margin:auto;}
-.contact-section input, .contact-section textarea {
-    padding:15px; border-radius:var(--radius); background:#111;
-    border:1px solid rgba(255,180,80,0.3); color:#fff;
-}
+  /* =========================
+     SMALLER SCREENS & MOBILE
+     - Globe on top (mobile) per user's request
+     - Drawer menu active
+     ========================= */
+  @media (max-width: 900px){
+    .hero{padding:110px 0 60px}
+    .hero-right{width:84vw; height:84vw; flex-basis:auto}
+    .hero-left{order:2; text-align:center}
+    .hero-right{order:1}
+    .nav-links{display:none}           /* hide desktop links */
+    .hamburger{display:block}         /* show hamburger */
+  }
 
+  /* Tight mobile adjustments */
+  @media (max-width:480px){
+    .nav-inner{padding:0 12px}
+    .drawer{width:86vw}
+    .hero{padding:90px 0 50px}
+    .container{padding:0 12px}
+    .hero-title{font-size:clamp(22px,6.6vw,32px)}
+    .hero-subtext{font-size:14px}
+    .feature-card{padding:18px}
+    .section{padding:60px 0}
+    .sunrise-glow{width:520px;height:520px}
+  }
 
-/* ---------------------------------------------------
-   FOOTER
---------------------------------------------------- */
-.footer {text-align:center; padding:60px; opacity:0.5;}
-
-
-/* ---------------------------------------------------
-   ANIMATIONS
---------------------------------------------------- */
-.fade-in {opacity:0; transform:translateY(30px); transition:1s ease;}
-.fade-in.visible {opacity:1; transform:translateY(0);}
-
-
-
-/* ---------------------------------------------------
-   🔥 MOBILE RESPONSIVE FIXES
---------------------------------------------------- */
-@media (max-width: 768px) {
-
-    /* NAV */
-    .navbar {padding: 14px 25px;}
-    .nav-links {gap: 15px;}
-    .nav-links a {font-size: 16px;}
-
-    /* HERO → Stack Globe FIRST */
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 140px 6% 80px;
-    }
-
-    .hero-right {
-        order: -1;               /* Globe on top */
-        width: 90vw;
-        height: 90vw;
-        margin-bottom: 25px;
-    }
-
-    .hero-left {max-width: 100%;}
-
-    .hero-title {font-size: 32px;}
-    .hero-subtext {font-size: 16px;}
-
-    .hero-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    /* Sections */
-    .section {padding: 80px 6%;}
-    .section-title {font-size: 32px;}
-    .section-sub {font-size: 16px;}
-
-    .stack-grid {grid-template-columns: 1fr;}
-
-    .sunrise-title {font-size: 32px;}
-    .sunrise-sub {font-size: 16px;}
-
-    /* Contact */
-    .contact-section {padding: 80px 6%;}
-    .contact-section button {width: 100%;}
-
-    /* Footer */
-    .footer {padding: 40px;}
-}
-</style>
+  /* ensure no overflow horizontally anywhere */
+  html,body,.container,.nav-inner{max-width:100%}
+  </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo">Dhoomketu</div>
-        <ul class="nav-links">
-            <li><a href="#hero">Home</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+  <!-- NAVBAR -->
+  <nav class="navbar" aria-label="Main navigation">
+    <div class="nav-inner">
+      <div class="logo">Dhoomketu</div>
+
+      <!-- Desktop Links -->
+      <ul class="nav-links" role="menubar" aria-hidden="false">
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <!-- Hamburger (mobile) -->
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+        <span class="bar bar1"></span>
+        <span class="bar bar2"></span>
+        <span class="bar bar3"></span>
+      </button>
     </div>
-</nav>
+  </nav>
 
+  <!-- Drawer + overlay -->
+  <div id="drawerOverlay" class="drawer-overlay" tabindex="-1" aria-hidden="true"></div>
 
-<!-- HERO -->
-<section id="hero" class="hero section fade-in">
-    <div class="hero-right">
-        <canvas id="hologramGlobe"></canvas>
+  <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
+    <div class="close-area">
+      <div style="display:flex;align-items:center;gap:10px">
+        <strong id="drawerTitle" style="font-size:18px">Menu</strong>
+      </div>
+      <button id="drawerClose" aria-label="Close menu" style="background:transparent;border:none; color:var(--text); font-size:20px; cursor:pointer">✕</button>
     </div>
 
-    <div class="hero-left">
-        <h1 class="hero-title">
-            Building the Future.<br>
-            With Intelligent and Agentic AI.
-        </h1>
-        <p class="hero-subtext">
-            Power your next-generation apps with hyper-fast, secure, futuristic and Agentic AI
-            built with cutting-edge engineering and flawless design.
-        </p>
+    <nav class="menu-links" aria-label="Mobile menu">
+      <a href="#hero" class="drawer-link">Home</a>
+      <a href="#features" class="drawer-link">Features</a>
+      <a href="#about" class="drawer-link">About</a>
+      <a href="#contact" class="drawer-link">Contact</a>
+    </nav>
 
-        <div class="hero-buttons">
-            <button class="btn-primary">Get Started</button>
-            <button class="btn-secondary">Explore Features</button>
+    <!-- optional extra items -->
+    <div style="margin-top:auto; font-size:13px; color:rgba(255,255,255,0.6)">
+      © 2025 Dhoomketu.space
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- HERO -->
+    <section id="hero" class="hero">
+      <div class="container" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <div class="hero-right" aria-hidden="false">
+          <canvas id="hologramGlobe" role="img" aria-label="Hologram globe visualization"></canvas>
         </div>
+
+        <div class="hero-left">
+          <h1 class="hero-title">Building the Future.<br>With Intelligent and Agentic AI.</h1>
+          <p class="hero-subtext">Power your next-generation apps with hyper-fast, secure, futuristic and Agentic AI built with cutting-edge engineering and flawless design.</p>
+
+          <div class="hero-buttons" aria-hidden="false">
+            <button class="btn btn-primary">Get Started</button>
+            <button class="btn btn-secondary">Explore Features</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section divider" style="padding:0">
+      <div class="container"><div style="height:100px; background:radial-gradient(circle, rgba(87,51,3,0.84), transparent 60%); border-radius:6px"></div></div>
     </div>
-</section>
 
+    <!-- FEATURES -->
+    <section id="features" class="section">
+      <div class="container">
+        <h2 class="section-title">Powerful Features</h2>
+        <p style="margin-top:8px; color:rgba(255,255,255,0.8)">Crafted for performance, refined with futuristic aesthetics.</p>
 
-<div class="divider-glow"></div>
-
-
-<!-- FEATURES -->
-<section id="features" class="section fade-in">
-    <h2 class="section-title">Powerful Features</h2>
-    <p class="section-sub">Crafted for performance, refined with futuristic aesthetics.</p>
-
-    <div class="features-grid">
-
-        <div class="feature-card">
+        <div style="margin-top:26px" class="features-grid">
+          <div class="feature-card">
             <h3>Build with AI Integration</h3>
-            <div class="card-graphic">It has AI <br> explore and know yourself</div>
-        </div>
+            <div class="card-graphic">It has AI — explore and know yourself</div>
+          </div>
 
-        <div class="feature-card">
+          <div class="feature-card">
             <h3>Complete Control</h3>
-            <div class="card-graphic">You have control over this</div>
-        </div>
+            <div class="card-graphic">You have control</div>
+          </div>
 
-        <div class="feature-card">
+          <div class="feature-card">
             <h3>Ultra Performance</h3>
-            <div class="card-graphic">Yes! Performance is there</div>
-        </div>
+            <div class="card-graphic">Performance is there</div>
+          </div>
 
-        <div class="feature-card">
+          <div class="feature-card">
             <h3>Professional Design</h3>
             <div class="card-graphic">Yes it has design</div>
+          </div>
         </div>
+      </div>
+    </section>
 
+    <div class="section divider" style="padding:0">
+      <div class="container"><div style="height:60px; background:radial-gradient(circle, rgba(87,51,3,0.5), transparent 60%); border-radius:6px"></div></div>
     </div>
-</section>
 
-
-<div class="divider-glow"></div>
-
-
-<!-- ABOUT -->
-<section id="about" class="section fade-in">
-    <div class="stack-grid">
-
+    <!-- ABOUT -->
+    <section id="about" class="section">
+      <div class="container">
         <div class="stack-card">
-            <center><h2>Made By Me to explore AI world</h2></center><br>
-            <center><p>Deploying AI projects with ideas and innovations.</p></center>
-            <center><p>Connecting APIs, CMS, databases. Your data, my rules.</p></center>
+          <h2 class="section-title">Made By Me to explore AI world</h2>
+          <p style="margin-top:12px; opacity:0.85">Deploying AI projects with ideas and innovations. Connecting APIs, CMS, databases — your data, my rules.</p>
         </div>
+      </div>
+    </section>
 
-    </div>
-</section>
+    <!-- SUNRISE -->
+    <section id="quality" class="sunrise-section">
+      <div class="container">
+        <h2 class="section-title">Quality you can trust.<br>And build on which I can TRUST</h2>
+        <p style="margin-top:12px; opacity:0.85">Designed with ideas and best practices. Every component meets modern accessibility and performance standards.</p>
+      </div>
+      <div class="sunrise-glow" aria-hidden="true"></div>
+    </section>
 
+    <!-- CONTACT -->
+    <section id="contact" class="contact-section">
+      <div class="container">
+        <h2 class="section-title">Contact Us</h2>
+        <p style="margin-top:8px; opacity:0.85">Have questions or want to collaborate? Send us a message!</p>
 
-<!-- SUNRISE -->
-<section id="quality" class="sunrise-section fade-in">
-    <h2 class="sunrise-title">Quality you can trust.<br>And build on which I can TRUST</h2>
-    <p class="sunrise-sub">Designed with ideas and best practices. Every component meets modern accessibility and performance standards.</p>
-    <div class="sunrise-glow"></div>
-</section>
+        <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Your Email" required />
+          <textarea placeholder="Your Message" rows="5" required></textarea>
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
 
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <p style="margin-bottom:6px">© 2025 Dhoomketu.space. All rights reserved.</p>
+        <p style="opacity:0.6">Do not think to copy it. JUST DO IT</p>
+      </div>
+    </footer>
+  </main>
 
-<!-- CONTACT -->
-<section class="contact-section" id="contact">
-  <h2 class="section-title fade-in">Contact Us</h2>
-  <p class="fade-in">Have questions or want to collaborate? Send us a message!</p>
-  <form class="fade-in">
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
-    <textarea placeholder="Your Message" rows="5" required></textarea>
-    <button type="submit">Send Message</button>
-  </form>
-</section>
+  <script>
+  /* =========================
+     NAV / DRAWER LOGIC
+     ========================= */
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const drawerClose = document.getElementById('drawerClose');
+  const drawerLinks = document.querySelectorAll('.drawer-link');
 
+  function openDrawer(){
+    drawer.classList.add('show');
+    overlay.classList.add('show');
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden'; // prevent background scroll
+    overlay.setAttribute('aria-hidden','false');
+    drawer.setAttribute('aria-hidden','false');
+    // focus management
+    drawer.focus();
+  }
 
-<!-- FOOTER -->
-<footer class="footer">
-    <p>© 2025 Dhoomketu.space. All rights reserved.</p>
-    <p>Do not think to copy it.</p><br>
-    <p>JUST DO IT</p>
-</footer>
+  function closeDrawer(){
+    drawer.classList.remove('show');
+    overlay.classList.remove('show');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = ''; // restore
+    overlay.setAttribute('aria-hidden','true');
+    drawer.setAttribute('aria-hidden','true');
+    hamburger.focus();
+  }
 
+  hamburger.addEventListener('click', ()=> {
+    const isOpen = drawer.classList.contains('show');
+    if(isOpen) closeDrawer(); else openDrawer();
+  });
 
+  overlay.addEventListener('click', closeDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
 
-<!-- JS -->
-<script>
-// Fade-in on scroll
-const observer = new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-        if(entry.isIntersecting){ entry.target.classList.add("visible"); }
+  // close drawer when link clicked & smooth scroll
+  drawerLinks.forEach(link=>{
+    link.addEventListener('click', (e)=>{
+      closeDrawer();
+      // allow normal anchor behavior (scroll)
     });
-},{threshold:0.2});
-document.querySelectorAll(".fade-in").forEach(el=>observer.observe(el));
+  });
 
+  // close with escape
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && drawer.classList.contains('show')) closeDrawer();
+  });
 
-// Parallax
-document.addEventListener("mousemove",(e)=>{
-    const x=(e.clientX/window.innerWidth-0.5)*20;
-    const y=(e.clientY/window.innerHeight-0.5)*20;
-    gsap.to(".hero-left",{x:x*0.6,y:y*0.6,duration:1.4,ease:"power3.out"});
-    gsap.to(".hero-right",{x:x*-0.4,y:y*-0.4,duration:1.4,ease:"power3.out"});
-});
+  /* =========================
+     Contact form placeholder handler
+     (so "Send Message" doesn't look broken)
+     ========================= */
+  function handleContact(e){
+    e.preventDefault();
+    // simple visual feedback — replace with real submission later
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    const original = btn.innerText;
+    btn.innerText = 'Sending…';
+    setTimeout(()=>{
+      btn.innerText = 'Message Sent ✓';
+      btn.style.boxShadow = '0 10px 30px rgba(0,0,0,0.35)';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.innerText = original }, 2000);
+      e.target.reset();
+    }, 900);
+  }
 
+  /* =========================
+     FADE-IN ON SCROLL (simple)
+     ========================= */
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, {threshold:0.16});
 
-// Three.js Globe
-let scene,camera,renderer,globe,glowSphere;
-function initGlobe(){
-    const canvas=document.getElementById("hologramGlobe");
-    scene=new THREE.Scene();
-    camera=new THREE.PerspectiveCamera(60,canvas.clientWidth/canvas.clientHeight,0.1,1000);
-    camera.position.z=3.5;
+  document.querySelectorAll('.section, .feature-card, .stack-card, .sunrise-section, .contact-section, .hero-left').forEach(el=>{
+    el.classList.add('fade'); // keep styles separate if needed
+    observer.observe(el);
+  });
 
-    renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-    renderer.setSize(canvas.clientWidth,canvas.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+  /* =========================
+     THREE.JS GLOBE
+     - improved resize handling
+     ========================= */
+  let scene, camera, renderer, globe, glowSphere, ring;
+  function initGlobe(){
+    const canvas = document.getElementById('hologramGlobe');
 
-    const geo=new THREE.SphereGeometry(1.3,32,32);
-    const mat=new THREE.MeshBasicMaterial({color:0xffb35c,wireframe:true,transparent:true,opacity:0.65});
-    globe=new THREE.Mesh(geo,mat); scene.add(globe);
+    // create renderer with existing canvas
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-    const glowGeo=new THREE.SphereGeometry(1.65,32,32);
-    const glowMat=new THREE.MeshBasicMaterial({color:0xffb35c,transparent:true,opacity:0.13});
-    glowSphere=new THREE.Mesh(glowGeo,glowMat); scene.add(glowSphere);
+    scene = new THREE.Scene();
 
-    const ringGeo=new THREE.RingGeometry(1.6,1.8,64);
-    const ringMat=new THREE.MeshBasicMaterial({color:0xffb35c,side:THREE.DoubleSide,transparent:true,opacity:0.25});
-    const ring=new THREE.Mesh(ringGeo,ringMat);
-    ring.rotation.x=Math.PI/2; scene.add(ring);
+    // camera with default aspect; will resize below
+    camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / Math.max(canvas.clientHeight,1), 0.1, 1000);
+    camera.position.z = 3.5;
 
-    animate();
-}
-function animate(){
-    requestAnimationFrame(animate);
-    globe.rotation.y+=0.0035;
-    glowSphere.rotation.y-=0.0015;
-    renderer.render(scene,camera);
-}
+    // geometry
+    const geo = new THREE.SphereGeometry(1.3, 40, 40);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xffb35c, wireframe: true, transparent: true, opacity: 0.66 });
+    globe = new THREE.Mesh(geo, mat);
+    scene.add(globe);
 
-window.addEventListener("resize",()=>{
-    const canvas=document.getElementById("hologramGlobe");
-    camera.aspect=canvas.clientWidth/canvas.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(canvas.clientWidth,canvas.clientHeight);
-});
+    const glowGeo = new THREE.SphereGeometry(1.65, 40, 40);
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0xffb35c, transparent: true, opacity: 0.12 });
+    glowSphere = new THREE.Mesh(glowGeo, glowMat);
+    scene.add(glowSphere);
 
-initGlobe();
-</script>
+    const ringGeo = new THREE.RingGeometry(1.6, 1.82, 96);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xffb35c, side: THREE.DoubleSide, transparent: true, opacity: 0.28 });
+    ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2;
+    scene.add(ring);
 
+    resizeGlobe();
+    animateGlobe();
+  }
+
+  function resizeGlobe(){
+    const canvas = renderer.domElement;
+    // calculate displayed size in CSS pixels
+    const displayWidth  = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
+    // set size in device pixels
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(displayWidth, displayHeight, false);
+
+    if (camera) {
+      camera.aspect = Math.max(displayWidth / Math.max(displayHeight,1), 1);
+      camera.updateProjectionMatrix();
+    }
+  }
+
+  function animateGlobe(){
+    requestAnimationFrame(animateGlobe);
+    if(globe) globe.rotation.y += 0.0038;
+    if(glowSphere) glowSphere.rotation.y -= 0.0016;
+    renderer.render(scene, camera);
+  }
+
+  // initialize when DOM ready
+  window.addEventListener('DOMContentLoaded', ()=> {
+    try{ initGlobe(); } catch(err){ console.warn('three.js init error', err); }
+  });
+
+  // resize handling (throttle)
+  let resizeTimer;
+  window.addEventListener('resize', ()=> {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(()=> {
+      try{ resizeGlobe(); } catch(e){}
+    }, 120);
+  });
+
+  /* Prevent horizontal overflow bug: adjust drawer/padding if necessary */
+  (function removeHorizontalOverflow(){
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+  })();
+
+  </script>
 </body>
 </html>
