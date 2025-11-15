@@ -1,3 +1,4 @@
 Django==5.0
-gunicorn==XX.XX
+gunicorn==21.2.0
+
 
