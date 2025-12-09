@@ -7,193 +7,73 @@
   <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
   <title>Dhoomketu - The Comet Tales</title>
 
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Lottie (lottie-web) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js" defer></script>
+  <!-- GSAP for smooth scroll / micro-interactions -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
 
   <style>
-    /* =========================
-       THEME (Green Shades)
-       ========================= */
     :root{
-      --bg: #07120E;               /* deep forest */
-      --card: rgba(8,20,16,0.6);   /* frosted dark */
-      --green: #39d353;            /* main accent (mint-green) */
-      --green-2: #1fb16a;          /* secondary */
-      --green-soft: rgba(57,211,83,0.12);
-      --glow: 0 0 40px rgba(31,177,106,0.28);
-      --text: #ECFFF6;
-      --muted: rgba(236,255,246,0.72);
-      --radius: 18px;
-      --transition: 0.28s cubic-bezier(.2,.9,.2,1);
-      --max-width:1200px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --bg:#04120B; --panel:#081812; --accent:#1fb16a; --accent-2:#2bd97f;
+      --accent-glow:0 0 36px rgba(39,190,105,0.24); --text:#E8FFF4; --muted:rgba(232,255,244,0.75);
+      --radius:16px; --max-width:1200px; --transition:.28s cubic-bezier(.2,.9,.2,1);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background: linear-gradient(180deg,#04120C 0%, var(--bg) 60%);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
+    *{box-sizing:border-box} html,body{height:100%} body{
+      margin:0; background:linear-gradient(180deg,#03130c 0%,var(--bg) 70%); color:var(--text);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow-x:hidden;
     }
-    a{color:inherit; text-decoration:none}
-    h1,h2,h3{margin:0}
-    .hero-title{font-size:clamp(28px,4.5vw,64px); line-height:1.05; font-weight:800}
-    .section-title{font-size:clamp(22px,3.2vw,48px); font-weight:700}
-    p{margin:0}
-    .container{max-width:var(--max-width); margin:0 auto; padding:0 20px;}
-
-    /* =========================
-       NAVBAR
-       ========================= */
-    .navbar{
-      position:fixed; left:0; right:0; top:12px;
-      background: linear-gradient(180deg, rgba(4,10,8,0.45), rgba(4,10,8,0.15));
-      backdrop-filter: blur(8px);
-      border-radius: 14px;
-      padding:10px 12px;
-      z-index:1400;
-      display:flex; justify-content:center;
-    }
-    .nav-inner{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px; width:100%; max-width:var(--max-width); padding:0 8px;
-    }
-    .logo{
-      font-weight:800; font-size:clamp(18px,2.2vw,26px);
-      color:var(--green); letter-spacing:0.6px;
-      text-shadow: var(--glow);
-    }
-    .nav-links{display:flex; gap:18px; align-items:center; list-style:none; margin:0; padding:0}
-    .nav-links a{
-      font-size:clamp(13px,1.4vw,18px); color:var(--muted);
-      padding:8px 12px; border-radius:12px; transition:var(--transition);
-    }
-    .nav-links a:focus, .nav-links a:hover{
-      color:#042b18; background:var(--green); box-shadow:var(--glow); outline:none;
-    }
-
-    /* Hamburger */
-    .hamburger{width:46px; height:40px; display:none; position:relative; cursor:pointer; background:transparent; border:none; padding:0;}
-    .hamburger .bar{position:absolute; left:10px; right:10px; height:3px; background:var(--muted); border-radius:3px; transform-origin:center; transition:transform 260ms ease, opacity 260ms ease, top 260ms ease;}
-    .hamburger .bar1{top:10px} .hamburger .bar2{top:18px} .hamburger .bar3{top:26px}
-    .hamburger.open .bar1{transform:translateY(8px) rotate(45deg)} .hamburger.open .bar2{opacity:0} .hamburger.open .bar3{transform:translateY(-8px) rotate(-45deg)}
-
-    /* Drawer & overlay */
-    .drawer-overlay{position:fixed; inset:0; background:rgba(0,0,0,0.55); opacity:0; visibility:hidden; transition:opacity 220ms ease, visibility 220ms ease; z-index:1100;}
-    .drawer-overlay.show{opacity:1; visibility:visible}
-    .drawer{position:fixed; right:0; top:0; height:100vh; width:360px; max-width:92vw; background:linear-gradient(180deg, rgba(5,25,16,0.9), rgba(3,12,9,0.9)); box-shadow: -12px 0 40px rgba(0,0,0,0.6); transform:translateX(110%); transition:transform 320ms cubic-bezier(.2,.9,.2,1); z-index:1150; padding:28px 22px; display:flex; flex-direction:column; gap:18px; border-radius:16px 0 0 16px;}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max-width);margin:0 auto;padding:0 20px}
+    .navbar{position:fixed;left:0;right:0;top:12px;margin:0 auto;display:flex;justify-content:center;z-index:1400}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:var(--max-width);padding:8px 12px;background:linear-gradient(180deg,rgba(3,12,9,0.45),rgba(4,14,10,0.18));border-radius:14px}
+    .logo{font-weight:800;color:var(--accent);font-size:clamp(18px,2.2vw,26px);text-shadow:var(--accent-glow)}
+    .nav-links{display:flex;gap:18px;align-items:center;list-style:none;margin:0;padding:0}
+    .nav-links a{font-size:15px;color:var(--muted);padding:8px 12px;border-radius:12px;transition:var(--transition)}
+    .nav-links a:hover{background:rgba(31,177,106,0.06);color:#03240f}
+    .hamburger{width:46px;height:40px;display:none;background:transparent;border:none;position:relative;cursor:pointer}
+    .hamburger .bar{position:absolute;left:10px;right:10px;height:3px;background:var(--muted);border-radius:3px;transition:transform 260ms ease,opacity 260ms}
+    .hamburger .bar1{top:10px}.hamburger .bar2{top:18px}.hamburger .bar3{top:26px}
+    .hamburger.open .bar1{transform:translateY(8px) rotate(45deg)}.hamburger.open .bar2{opacity:0}.hamburger.open .bar3{transform:translateY(-8px) rotate(-45deg)}
+    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);opacity:0;visibility:hidden;transition:opacity 220ms,visibility 220ms;z-index:1100}
+    .drawer-overlay.show{opacity:1;visibility:visible}
+    .drawer{position:fixed;right:0;top:0;height:100vh;width:360px;max-width:92vw;background:linear-gradient(180deg,#062015,#02120b);box-shadow:-12px 0 40px rgba(0,0,0,0.6);transform:translateX(110%);transition:transform 320ms;border-radius:16px 0 0 16px;padding:26px;z-index:1150}
     .drawer.show{transform:translateX(0)}
-    .drawer .menu-links{display:flex; flex-direction:column; gap:10px; margin-top:8px}
-    .drawer .menu-links a{font-size:16px; color:var(--muted); padding:12px; border-radius:10px; transition:background 160ms ease}
-    .drawer .menu-links a:focus, .drawer .menu-links a:hover{background:rgba(31,177,106,0.08); color:var(--green-2)}
-
-    /* =========================
-       HERO
-       ========================= */
-    .hero{
-      display:flex; justify-content:space-between; align-items:center; gap:28px;
-      min-height:92vh; padding:120px 0 80px;
-    }
-    .hero-left{flex:1; max-width:720px; padding:18px; background: linear-gradient(180deg, rgba(10,24,18,0.0), rgba(10,24,18,0.0)); border-radius:12px}
-    .hero-right{width:520px; height:520px; flex:0 0 520px; display:flex; align-items:center; justify-content:center; position:relative}
-    #hologramGlobe{width:100%; height:100%; display:block; border-radius:14px; box-shadow: 0 12px 40px rgba(2,20,14,0.6);}
-
-    .hero-subtext{margin-top:16px; opacity:0.85; font-size:clamp(14px,1.6vw,20px); line-height:1.6}
-    .hero-buttons{margin-top:26px; display:flex; gap:14px; align-items:center; flex-wrap:wrap}
-
-    /* Buttons (ripple + focus) */
-    .btn{padding:12px 24px; border-radius:14px; font-weight:700; font-size:15px; cursor:pointer; border:none; position:relative; overflow:hidden; transition:transform 160ms ease, box-shadow 160ms ease}
-    .btn:focus{outline:3px solid rgba(57,211,83,0.16); outline-offset:2px}
-    .btn-primary{background:linear-gradient(180deg,var(--green),var(--green-2)); color:#002612; box-shadow: 0 10px 30px rgba(31,177,106,0.18)}
-    .btn-secondary{background:transparent; border:1px solid rgba(57,211,83,0.12); color:var(--green-2)}
-    /* ripple */
-    .ripple{position:absolute; border-radius:50%; transform:scale(0); animation:ripple 600ms linear; background: rgba(255,255,255,0.12);}
-    @keyframes ripple { to { transform: scale(12); opacity:0; } }
-
-    /* =========================
-       FEATURES / CARDS
-       ========================= */
-    .section{ padding: 100px 8%; }
-    .section-title{ margin-bottom:8px; color:var(--text) }
-    .section-sub{ margin-top:10px; font-size:18px; opacity:0.75 }
-    .features-grid{ margin-top:48px; display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:26px; }
-    .feature-card{
-      padding:22px; border-radius:16px; background: linear-gradient(180deg, rgba(8,18,12,0.55), rgba(12,26,18,0.45));
-      border: 1px solid rgba(45,110,75,0.08); box-shadow: inset 0 2px 12px rgba(0,0,0,0.25);
-      transition: transform 320ms cubic-bezier(.2,.9,.2,1), box-shadow 320ms;
-      transform-style: preserve-3d; cursor:grab;
-    }
-    .feature-card:hover{ transform: translateY(-10px) rotateX(4deg); box-shadow: 0 16px 50px rgba(2,12,8,0.6); }
-    .feature-card h3{font-size:18px; color:var(--green-2)}
-    .card-graphic{ margin-top:22px; height:70px; border-radius:12px; background: linear-gradient(120deg, rgba(31,177,106,0.12), transparent 40%); display:flex; align-items:center; justify-content:center; color:var(--muted); font-weight:600; }
-
-    /* subtle 3D tilt reflection */
-    .feature-card .shine{ position:absolute; inset:0; pointer-events:none; border-radius:16px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00)); mix-blend-mode:overlay; }
-
-    /* ABOUT / STACK */
-    .stack-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(360px,1fr)); gap:36px; margin-top:36px; }
-    .stack-card{ padding:36px; border-radius:20px; background: linear-gradient(180deg, rgba(7,16,12,0.45), rgba(8,18,13,0.35)); border: 1px solid rgba(31,177,106,0.06); box-shadow: 0 8px 30px rgba(2,8,6,0.55); }
-
-    /* SUNRISE (renamed to 'Quality') */
-    .sunrise-section{ text-align:center; padding:120px 6%; position:relative; overflow:hidden; border-radius:18px; margin:40px 4%;}
-    .sunrise-glow{ position:absolute; bottom:-120px; left:50%; transform:translateX(-50%); width:900px; height:900px; background: radial-gradient(circle, rgba(31,177,106,0.2), transparent 60%); filter: blur(80px); z-index:0; pointer-events:none; }
-
-    /* CONTACT */
-    .contact-section{ padding:100px 6%; display:flex; flex-direction:column; align-items:center; text-align:center; }
-    .contact-section form{ margin-top:28px; display:flex; flex-direction:column; gap:12px; width:100%; max-width:520px;}
-    .contact-section input, .contact-section textarea{
-      padding:14px; border-radius:14px; border:1px solid rgba(57,211,83,0.08); background:rgba(4,10,8,0.46); color:var(--text); resize:none;
-      transition: box-shadow 160ms ease, transform 160ms ease;
-    }
-    .contact-section input:focus, .contact-section textarea:focus{ box-shadow: 0 8px 28px rgba(31,177,106,0.08); outline:none; transform:translateY(-2px); }
-    .contact-section button{ padding:12px 18px; border-radius:12px; border:none; font-weight:700; cursor:pointer; background:linear-gradient(180deg,var(--green),var(--green-2)); color:#02180f; box-shadow:0 12px 32px rgba(31,177,106,0.18); }
-    .contact-form .help { font-size:13px; opacity:0.7; margin-top:-6px; }
-
-    /* Toast */
-    .toast{ position:fixed; bottom:28px; right:28px; background:linear-gradient(180deg, rgba(10,30,24,0.9), rgba(6,18,12,0.96)); color:var(--muted); padding:12px 18px; border-radius:12px; box-shadow:0 8px 26px rgba(0,0,0,0.6); transform:translateY(20px); opacity:0; transition:all 300ms ease; z-index:1600;}
-    .toast.show{ transform:translateY(0); opacity:1; }
-
-    /* Footer */
-    .footer{ padding:48px 0; text-align:center; opacity:0.7; font-size:14px }
-
-    /* Animations & fade-ins */
-    .fade-in{ opacity:0; transform: translateY(22px); transition: all 800ms cubic-bezier(.2,.9,.2,1); }
-    .fade-in.visible{ opacity:1; transform: translateY(0); }
-
-    /* mobile adjustments (globe on top) */
-    @media (max-width: 900px){
-      .hero{ padding:90px 0 60px; flex-direction:column-reverse; align-items:center; gap:22px; }
-      .hero-right{ width:84vw; height:84vw; flex-basis:auto; order:0 }
-      .hero-left{ order:1; text-align:center; padding:4px 12px }
-      .nav-links{ display:none }
-      .hamburger{ display:block }
-      .drawer{ left:0; right:auto; border-radius:0 0 0 0; }
-    }
-    @media (max-width:480px){
-      .container{ padding:0 12px }
-      .section{ padding:50px 4% }
-      .sunrise-section{ padding:80px 4% }
-      .hero-title{ font-size:clamp(22px,6.4vw,32px) }
-      .features-grid{ gap:16px }
-      .feature-card{ padding:16px; border-radius:12px }
-      .hero-right{ height:76vw; width:76vw }
-      .drawer{ width:92vw; }
-    }
-
-    /* ensure no overflow horizontally */
-    html,body,.container,.nav-inner{max-width:100%}
+    .drawer .menu-links{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+    .drawer .menu-links a{padding:12px;border-radius:10px;color:var(--muted)}
+    .hero{display:flex;align-items:center;gap:28px;min-height:92vh;padding:120px 0 80px}
+    .hero-left{flex:1;max-width:720px}
+    .hero-title{font-size:clamp(28px,4.5vw,64px);line-height:1.05;font-weight:800}
+    .hero-subtext{margin-top:16px;opacity:0.86;font-size:clamp(14px,1.6vw,20px)}
+    .hero-right{width:520px;height:520px;flex:0 0 520px;display:flex;align-items:center;justify-content:center;position:relative}
+    .anim-viewport{width:100%;height:100%;border-radius:14px;box-shadow:0 12px 40px rgba(2,20,14,0.6);background:linear-gradient(180deg,rgba(6,18,14,0.3),rgba(3,10,8,0.4));display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    /* SVG fallback comet */
+    .svg-fallback{width:64%;height:64%;display:block}
+    .svg-comet .tail{transform-origin:0 50%;animation:tailMove 2s linear infinite}
+    @keyframes tailMove{0%{opacity:0.06;transform:translateX(0)}50%{opacity:0.22;transform:translateX(-6px)}100%{opacity:0.06;transform:translateX(0)}}
+    .hero-buttons{margin-top:22px;display:flex;gap:14px;flex-wrap:wrap}
+    .btn{padding:12px 24px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;border:none;position:relative;overflow:hidden;transition:transform .16s}
+    .btn-primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#022613;box-shadow:var(--accent-glow)}
+    .btn-secondary{background:transparent;border:1px solid rgba(47,209,126,0.08);color:var(--accent-2)}
+    .section{padding:100px 8%}
+    .features-grid{margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+    .feature-card{padding:20px;border-radius:14px;background:linear-gradient(180deg,rgba(8,24,18,0.5),rgba(6,18,13,0.35));border:1px solid rgba(35,90,60,0.06);transition:transform 320ms,box-shadow 320ms;cursor:grab}
+    .feature-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(1,8,6,0.6)}
+    .card-graphic{margin-top:18px;height:66px;border-radius:12px;background:linear-gradient(120deg,rgba(31,177,106,0.08),transparent);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+    .contact-section{padding:100px 6%;text-align:center}
+    .contact-form input,.contact-form textarea{padding:14px;border-radius:12px;border:1px solid rgba(47,209,126,0.06);background:rgba(2,9,7,0.45);color:var(--text)}
+    .contact-form button{padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#012610;cursor:pointer}
+    .toast{position:fixed;bottom:22px;right:22px;background:linear-gradient(180deg,#062017,#03110b);color:var(--muted);padding:12px 16px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6);opacity:0;transform:translateY(10px);transition:all .28s;z-index:1600}
+    .toast.show{opacity:1;transform:translateY(0)}
+    @media(max-width:900px){.hero{flex-direction:column-reverse;padding:90px 0 60px}.hero-right{width:84vw;height:84vw}.nav-links{display:none}.hamburger{display:block}}
+    @media(max-width:480px){.hero-title{font-size:clamp(22px,6.6vw,32px)}.section{padding:60px 6%}}
   </style>
 </head>
 <body>
-
-  <!-- NAVBAR -->
-  <nav class="navbar" aria-label="Main navigation">
+  <nav class="navbar" aria-label="Main">
     <div class="nav-inner container">
-      <div style="display:flex; align-items:center; gap:14px;">
+      <div style="display:flex;align-items:center;gap:12px">
         <div class="logo">Dhoomketu</div>
         <ul class="nav-links" role="menubar" aria-hidden="false">
           <li><a href="#hero">Home</a></li>
@@ -202,400 +82,203 @@
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
-
-      <!-- Hamburger (mobile) -->
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button class="btn btn-secondary" id="ctaTop" title="Get started">Get Started</button>
-        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
-          <span class="bar bar1"></span>
-          <span class="bar bar2"></span>
-          <span class="bar bar3"></span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-secondary" id="ctaTop">Get Started</button>
+        <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span class="bar bar1"></span><span class="bar bar2"></span><span class="bar bar3"></span>
         </button>
       </div>
     </div>
   </nav>
 
-  <!-- Drawer + overlay -->
   <div id="drawerOverlay" class="drawer-overlay" tabindex="-1" aria-hidden="true"></div>
-
   <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
-    <div class="close-area" style="display:flex; justify-content:space-between; align-items:center;">
-      <div style="display:flex;align-items:center;gap:10px">
-        <strong id="drawerTitle" style="font-size:18px">Menu</strong>
-      </div>
-      <div>
-        <button id="drawerClose" aria-label="Close menu" style="background:transparent;border:none; color:var(--muted); font-size:20px; cursor:pointer">✕</button>
-      </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong id="drawerTitle">Menu</strong>
+      <button id="drawerClose" aria-label="Close" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
     </div>
-
-    <nav class="menu-links" aria-label="Mobile menu">
+    <nav class="menu-links" aria-label="Mobile menu" style="margin-top:12px">
       <a href="#hero" class="drawer-link">Home</a>
       <a href="#features" class="drawer-link">Features</a>
       <a href="#about" class="drawer-link">About</a>
       <a href="#contact" class="drawer-link">Contact</a>
     </nav>
-
-    <div style="margin-top:auto; font-size:13px; color:rgba(200,255,230,0.6)">
-      © 2025 Dhoomketu.space
-    </div>
+    <div style="margin-top:auto;color:rgba(200,255,230,0.6)">© 2025 Dhoomketu.space</div>
   </aside>
 
-  <!-- MAIN -->
   <main>
-    <!-- HERO -->
     <section id="hero" class="hero">
-      <div class="container hero-left fade-in">
+      <div class="container hero-left">
         <h1 class="hero-title">Building the Future.<br>With Intelligent and Agentic AI.</h1>
         <p class="hero-subtext">Power your next-generation apps with hyper-fast, secure, futuristic and Agentic AI built with cutting-edge engineering and thoughtful design.</p>
-
         <div class="hero-buttons" aria-hidden="false">
           <button class="btn btn-primary" id="primaryBtn">Get Started</button>
           <button class="btn btn-secondary" id="secondaryBtn">Explore Features</button>
         </div>
-
-        <div style="margin-top:18px; display:flex; gap:10px; align-items:center; justify-content:flex-start;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div style="width:12px; height:12px; border-radius:50%; background:var(--green); box-shadow: var(--glow);"></div>
-            <small style="opacity:0.75">Realtime demos · Accessible design · Secure by default</small>
-          </div>
-        </div>
       </div>
 
-      <div class="hero-right fade-in" aria-hidden="false">
-        <canvas id="hologramGlobe" role="img" aria-label="Hologram globe visualization"></canvas>
+      <div class="hero-right" aria-hidden="false">
+        <div class="anim-viewport" id="animViewport" aria-hidden="false">
+          <!-- Lottie canvas will be injected here -->
+          <div id="lottieContainer" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div>
+
+          <!-- SVG fallback (always present, shown when Lottie fails) -->
+          <svg class="svg-fallback svg-comet" viewBox="0 0 200 200" role="img" aria-label="Comet animation">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1">
+                <stop offset="0" stop-color="#2ff49a" stop-opacity="0.95" />
+                <stop offset="1" stop-color="#19784e" stop-opacity="0.12" />
+              </linearGradient>
+              <filter id="blur"><feGaussianBlur stdDeviation="6" /></filter>
+            </defs>
+            <g transform="translate(0,20)">
+              <ellipse cx="150" cy="70" rx="6" ry="6" fill="#eafff0" />
+              <path class="tail" d="M20 70 C70 60,110 60,150 70" stroke="url(#g)" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.14"/>
+              <circle cx="150" cy="70" r="8" fill="#ccffe8" filter="url(#blur)"/>
+            </g>
+          </svg>
+        </div>
       </div>
     </section>
 
-    <div class="section divider" style="padding:0">
-      <div class="container"><div style="height:100px; border-radius:12px; background: linear-gradient(90deg, rgba(31,177,106,0.06), rgba(57,211,83,0.02));"></div></div>
-    </div>
-
-    <!-- FEATURES -->
-    <section id="features" class="section fade-in">
+    <section id="features" class="section">
       <div class="container">
         <h2 class="section-title">Powerful Features</h2>
-        <p class="section-sub">Crafted for performance, refined with modern accessibility and delightful micro-interactions.</p>
-
+        <p style="margin-top:8px;color:var(--muted)">Crafted for performance, refined with modern accessibility and delightful micro-interactions.</p>
         <div style="margin-top:26px" class="features-grid">
-          <div class="feature-card" tabindex="0">
-            <h3>Build with AI Integration</h3>
-            <div class="card-graphic">Smart APIs · composable agents</div>
-          </div>
-
-          <div class="feature-card" tabindex="0">
-            <h3>Complete Control</h3>
-            <div class="card-graphic">Permissioned, auditable, and safe</div>
-          </div>
-
-          <div class="feature-card" tabindex="0">
-            <h3>Ultra Performance</h3>
-            <div class="card-graphic">Lightweight, low-latency infra</div>
-          </div>
-
-          <div class="feature-card" tabindex="0">
-            <h3>Professional Design</h3>
-            <div class="card-graphic">Accessible & responsive UX</div>
-          </div>
+          <div class="feature-card" tabindex="0"><h3>Build with AI Integration</h3><div class="card-graphic">Smart APIs · composable agents</div></div>
+          <div class="feature-card" tabindex="0"><h3>Complete Control</h3><div class="card-graphic">Permissioned, auditable, and safe</div></div>
+          <div class="feature-card" tabindex="0"><h3>Ultra Performance</h3><div class="card-graphic">Lightweight, low-latency infra</div></div>
+          <div class="feature-card" tabindex="0"><h3>Professional Design</h3><div class="card-graphic">Accessible & responsive UX</div></div>
         </div>
       </div>
     </section>
 
-    <div class="section divider" style="padding:0">
-      <div class="container"><div style="height:60px; border-radius:10px; background: linear-gradient(90deg, rgba(31,177,106,0.04), transparent);"></div></div>
-    </div>
-
-    <!-- ABOUT -->
-    <section id="about" class="section fade-in">
+    <section id="about" class="section">
       <div class="container">
-        <div class="stack-card">
+        <div class="stack-card" style="padding:28px;border-radius:14px;background:linear-gradient(180deg,rgba(6,18,14,0.4),rgba(3,10,8,0.35));border:1px solid rgba(31,177,106,0.04)">
           <h2 class="section-title">Made By Us to explore AI world</h2>
-          <p style="margin-top:12px; opacity:0.85">Deploying AI projects with ideas and innovations. Connecting APIs, CMS, databases — your data, my rules.</p>
+          <p style="margin-top:12px;opacity:0.85">Deploying AI projects with ideas and innovations. Connecting APIs, CMS, databases — your data, my rules.</p>
         </div>
       </div>
     </section>
 
-    <!-- QUALITY -->
-    <section id="quality" class="sunrise-section fade-in">
+    <section id="quality" class="section" style="text-align:center;position:relative;overflow:hidden">
       <div class="container">
         <h2 class="section-title">Quality you can trust.</h2>
-        <p style="margin-top:12px; opacity:0.85">Designed with modern best practices. Accessibility, performance, and crisp visuals baked in.</p>
+        <p style="margin-top:12px;opacity:0.85">Designed with modern best practices. Accessibility, performance, and crisp visuals baked in.</p>
       </div>
-      <div class="sunrise-glow" aria-hidden="true"></div>
+      <div style="position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(39,190,105,0.18),transparent 60%);filter:blur(60px);pointer-events:none"></div>
     </section>
 
-    <!-- CONTACT -->
-    <section id="contact" class="contact-section fade-in">
+    <section id="contact" class="contact-section">
       <div class="container">
         <h2 class="section-title">Contact Us</h2>
-        <p style="margin-top:8px; opacity:0.85">Have questions or want to collaborate? Send us a message!</p>
-
-        <form class="contact-form" id="contactForm" onsubmit="handleContact(event)" aria-label="Contact form">
-          <input type="text" placeholder="Your Name" name="name" required />
-          <input type="email" placeholder="Your Email" name="email" required />
-          <textarea placeholder="Your Message" rows="5" name="message" required></textarea>
-          <div style="display:flex; gap:12px; align-items:center; justify-content:center; margin-top:6px;">
+        <p style="margin-top:8px;opacity:0.85">Have questions or want to collaborate? Send us a message!</p>
+        <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Your Email" required />
+          <textarea placeholder="Your Message" rows="5" required></textarea>
+          <div style="margin-top:12px;display:flex;gap:12px;justify-content:center">
             <button type="submit">Send Message</button>
             <button type="button" class="btn btn-secondary" id="clearBtn">Clear</button>
           </div>
-          <div class="help" style="text-align:left; margin-top:8px; opacity:0.75">We respect your privacy. This demo doesn't send data — it's a placeholder.</div>
+          <div style="margin-top:8px;font-size:13px;opacity:0.78">Placeholder form — no submission configured.</div>
         </form>
       </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="container">
-        <p style="margin-bottom:6px">© 2025 Dhoomketu.space All rights reserved.</p>
-        <p style="opacity:0.6">Do not think to copy it.<br> JUST DO IT</p>
-      </div>
+    <footer class="footer" style="padding:48px 0;text-align:center;opacity:0.7">
+      <div class="container"><p>© 2025 Dhoomketu.space All rights reserved.</p><p style="opacity:0.6">Do not think to copy it.<br> JUST DO IT</p></div>
     </footer>
   </main>
 
-  <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite">Message sent — we'll get back to you soon.</div>
 
   <script>
-    /* =========================
-       NAV / DRAWER LOGIC
-       ========================= */
-    const hamburger = document.getElementById('hamburger');
-    const drawer = document.getElementById('drawer');
-    const overlay = document.getElementById('drawerOverlay');
-    const drawerClose = document.getElementById('drawerClose');
+    // Drawer + hamburger
+    const hamburger = document.getElementById('hamburger'), drawer = document.getElementById('drawer'), overlay = document.getElementById('drawerOverlay'), drawerClose = document.getElementById('drawerClose');
     const drawerLinks = document.querySelectorAll('.drawer-link');
+    function openDrawer(){ drawer.classList.add('show'); overlay.classList.add('show'); hamburger.classList.add('open'); hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; drawer.focus(); }
+    function closeDrawer(){ drawer.classList.remove('show'); overlay.classList.remove('show'); hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; hamburger.focus(); }
+    hamburger.addEventListener('click', ()=> { const isOpen = drawer.classList.contains('show'); if(isOpen) closeDrawer(); else openDrawer(); });
+    overlay.addEventListener('click', closeDrawer); drawerClose.addEventListener('click', closeDrawer);
+    drawerLinks.forEach(l=>l.addEventListener('click', ()=> closeDrawer())); document.addEventListener('keydown', e=>{ if(e.key==='Escape' && drawer.classList.contains('show')) closeDrawer(); });
 
-    function openDrawer(){
-      drawer.classList.add('show');
-      overlay.classList.add('show');
-      hamburger.classList.add('open');
-      hamburger.setAttribute('aria-expanded','true');
-      document.body.style.overflow = 'hidden';
-      overlay.setAttribute('aria-hidden','false');
-      drawer.setAttribute('aria-hidden','false');
-      drawer.focus();
-    }
-
-    function closeDrawer(){
-      drawer.classList.remove('show');
-      overlay.classList.remove('show');
-      hamburger.classList.remove('open');
-      hamburger.setAttribute('aria-expanded','false');
-      document.body.style.overflow = '';
-      overlay.setAttribute('aria-hidden','true');
-      drawer.setAttribute('aria-hidden','true');
-      hamburger.focus();
-    }
-
-    hamburger.addEventListener('click', ()=> {
-      const isOpen = drawer.classList.contains('show');
-      if(isOpen) closeDrawer(); else openDrawer();
+    // Button ripple
+    document.querySelectorAll('.btn, .btn-primary, .btn-secondary').forEach(b=>{
+      b.addEventListener('click', function(e){
+        const rect = this.getBoundingClientRect(); const circle = document.createElement('span'); circle.style.position='absolute'; circle.style.borderRadius='50%';
+        circle.style.width = circle.style.height = Math.max(rect.width, rect.height)+'px';
+        circle.style.left = (e.clientX - rect.left - (rect.width)) + 'px'; circle.style.top = (e.clientY - rect.top - (rect.width)) + 'px';
+        circle.style.background = 'rgba(255,255,255,0.08)'; circle.style.transform='scale(0)'; circle.style.transition='transform .6s, opacity .6s'; this.appendChild(circle);
+        requestAnimationFrame(()=>{ circle.style.transform='scale(3)'; circle.style.opacity='0'; });
+        setTimeout(()=>circle.remove(),700);
+      });
     });
 
-    overlay.addEventListener('click', closeDrawer);
-    drawerClose.addEventListener('click', closeDrawer);
-    drawerLinks.forEach(link=>{
-      link.addEventListener('click', ()=> { closeDrawer(); });
-    });
-    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && drawer.classList.contains('show')) closeDrawer(); });
-
-    /* =========================
-       BUTTON RIPPLE EFFECT
-       ========================= */
-    function addRipple(e){
-      const btn = e.currentTarget;
-      const rect = btn.getBoundingClientRect();
-      const circle = document.createElement('span');
-      circle.className = 'ripple';
-      const size = Math.max(rect.width, rect.height);
-      circle.style.width = circle.style.height = size + 'px';
-      const left = e.clientX - rect.left - size/2;
-      const top = e.clientY - rect.top - size/2;
-      circle.style.left = left + 'px';
-      circle.style.top = top + 'px';
-      btn.appendChild(circle);
-      setTimeout(()=> { circle.remove(); }, 650);
-    }
-    document.querySelectorAll('.btn').forEach(b => b.addEventListener('click', addRipple));
-
-    /* CTA quick focus from top button */
-    document.getElementById('ctaTop').addEventListener('click', ()=> {
-      document.getElementById('primaryBtn').focus();
-      gsap.to(window, {duration:0.6, scrollTo: {y:'#contact', offsetY:80}});
-    });
-
-    /* =========================
-       CONTACT FORM (placeholder handler + toast)
-       ========================= */
+    // Contact form placeholder
     const toast = document.getElementById('toast');
-    function showToast(msg='Message sent — we will get back to you soon.'){
-      toast.innerText = msg;
-      toast.classList.add('show');
-      setTimeout(()=> toast.classList.remove('show'), 3800);
-    }
-
-    function handleContact(e){
-      e.preventDefault();
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      const original = btn.innerText;
-      btn.innerText = 'Sending…';
-      setTimeout(()=>{
-        btn.innerText = 'Message Sent ✓';
-        btn.style.boxShadow = '0 10px 30px rgba(0,0,0,0.35)';
-        btn.disabled = false;
-        showToast();
-        setTimeout(()=>{ btn.innerText = original }, 1200);
-        e.target.reset();
-      }, 900);
-    }
+    function showToast(msg='Message sent — we will get back to you soon.'){ toast.innerText = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3600); }
+    function handleContact(e){ e.preventDefault(); const btn = e.target.querySelector('button[type="submit"]'); btn.disabled=true; const orig=btn.innerText; btn.innerText='Sending…'; setTimeout(()=>{ btn.innerText='Message Sent ✓'; btn.disabled=false; showToast(); setTimeout(()=>btn.innerText=orig,1200); e.target.reset(); },900); }
     document.getElementById('clearBtn').addEventListener('click', ()=> document.getElementById('contactForm').reset());
 
-    /* =========================
-       FADE-IN ON SCROLL
-       ========================= */
-    const observer = new IntersectionObserver(entries=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting) entry.target.classList.add('visible');
+    // Fade-in on scroll
+    const observer = new IntersectionObserver(entries=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); }); }, {threshold:0.16});
+    document.querySelectorAll('.section, .feature-card, .hero-left, .hero-right').forEach(el=>{ el.classList.add('fade'); observer.observe(el); });
+
+    // Feature card tilt
+    document.querySelectorAll('.feature-card').forEach(card=>{
+      card.addEventListener('mousemove', e=>{
+        const r = card.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width; const y=(e.clientY-r.top)/r.height;
+        const rx = (y-0.5)*8; const ry=(x-0.5)*-10; card.style.transform=`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
       });
-    }, {threshold:0.16});
-    document.querySelectorAll('.section, .feature-card, .stack-card, .sunrise-section, .contact-section, .hero-left, .hero-right').forEach(el=>{
-      el.classList.add('fade-in');
-      observer.observe(el);
+      card.addEventListener('mouseleave', ()=> card.style.transform='');
     });
 
-    /* =========================
-       FEATURE CARD INTERACTION (tilt)
-       ========================= */
-    const cards = document.querySelectorAll('.feature-card');
-    cards.forEach(card => {
-      card.addEventListener('mousemove', (e)=>{
-        const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        const rx = (y - 0.5) * 8; // rotateX
-        const ry = (x - 0.5) * -10; // rotateY
-        card.style.transform = `perspective(900px) translateZ(0) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px)`;
-      });
-      card.addEventListener('mouseleave', ()=>{
-        card.style.transform = '';
-      });
-      // keyboard accessible "press" effect
-      card.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter' || e.key === ' '){
-          card.animate([{ transform: 'scale(0.98)' }, { transform: 'scale(1)' }], { duration:200 });
-        }
-      });
-    });
+    // Prevent horizontal overflow
+    (function(){ document.documentElement.style.overflowX='hidden'; document.body.style.overflowX='hidden'; })();
 
-    /* Prevent horizontal overflow */
-    (function removeHorizontalOverflow(){
-      document.documentElement.style.overflowX = 'hidden';
-      document.body.style.overflowX = 'hidden';
-    })();
+    /* --------------------------
+       Lottie animation (inlined data)
+       - We load animationData directly (no network request)
+       - If you want a different animation, replace `animationData`
+       -------------------------- */
+    document.addEventListener('DOMContentLoaded', ()=> {
+      // small compact animation data (simple moving comet)
+      const animationData = {
+        "v":"5.7.4","fr":30,"ip":0,"op":90,"w":400,"h":400,"nm":"comet","ddd":0,"assets":[],
+        "layers":[
+          {"ddd":0,"ind":1,"ty":4,"nm":"tail","sr":1,"ks":{"o":{"a":0,"k":60},"r":{"a":0,"k":0},"p":{"a":0,"k":[200,200,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[
+            {"ty":"gr","it":[
+              {"ty":"rc","d":1,"s":{"a":0,"k":[260,36]},"p":{"a":0,"k":[0,0]},"r":{"a":0,"k":18},"nm":"rect"},
+              {"ty":"fl","c":{"a":0,"k":[0.12,0.85,0.55,1]},"o":{"a":0,"k":60},"nm":"fill"},
+              {"ty":"tr","p":{"a":0,"k":[-70,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":-22},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}
+            ],"nm":"tailGroup"}],"ip":0,"op":900,"st":0,"bm":0},
+          {"ddd":0,"ind":2,"ty":4,"nm":"core","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"i":{"x":0.667,"y":1},"o":{"x":0.333,"y":0},"t":0,"s":[40,200,0],"e":[360,200,0],"to":[6.333,0,0],"ti":[-6.333,0,0]},{"t":90}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[
+            {"ty":"el","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[34,34]},"nm":"ellipse"},
+            {"ty":"fl","c":{"a":0,"k":[0.94,1,0.97,1]},"o":{"a":0,"k":100},"nm":"fill"},
+            {"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}
+          ],"ip":0,"op":900,"st":0,"bm":0}
+        ]
+      };
 
-    /* =========================
-       THREE.JS HOLOGRAM GLOBE (green + particles)
-       ========================= */
-    let scene, camera, renderer, globe, points, ring;
-    function initGlobe(){
-      const canvas = document.getElementById('hologramGlobe');
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias:true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      scene = new THREE.Scene();
-
-      const w = canvas.clientWidth || 400;
-      const h = canvas.clientHeight || 400;
-      camera = new THREE.PerspectiveCamera(50, w / Math.max(h,1), 0.1, 1000);
-      camera.position.z = 3.8;
-
-      // globe wireframe (soft green)
-      const geo = new THREE.SphereGeometry(1.15, 48, 48);
-      const mat = new THREE.MeshBasicMaterial({ color: 0x29d07a, wireframe: true, opacity:0.9, transparent:true });
-      globe = new THREE.Mesh(geo, mat);
-      scene.add(globe);
-
-      // soft halo
-      const haloGeo = new THREE.SphereGeometry(1.45, 32, 32);
-      const haloMat = new THREE.MeshBasicMaterial({ color: 0x29d07a, transparent:true, opacity:0.08 });
-      const halo = new THREE.Mesh(haloGeo, haloMat);
-      scene.add(halo);
-
-      // orbit ring
-      const ringGeo = new THREE.RingGeometry(1.5, 1.62, 128);
-      const ringMat = new THREE.MeshBasicMaterial({ color:0x2fd78f, transparent:true, opacity:0.18, side:THREE.DoubleSide });
-      ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = Math.PI / 2;
-      ring.rotation.y = 0.3;
-      scene.add(ring);
-
-      // particle cloud (subtle)
-      const pts = [];
-      const colors = [];
-      for(let i=0;i<400;i++){
-        const r = 1.9 * Math.random();
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos((Math.random()*2)-1);
-        const x = r * Math.sin(phi) * Math.cos(theta);
-        const y = r * Math.sin(phi) * Math.sin(theta);
-        const z = r * Math.cos(phi);
-        pts.push(x,y,z);
-        // color slight greenish
-        colors.push(0.16 + Math.random()*0.2, 0.6 + Math.random()*0.3, 0.38 + Math.random()*0.3);
+      try {
+        // create container
+        const container = document.getElementById('lottieContainer');
+        const anim = lottie.loadAnimation({
+          container: container,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: animationData
+        });
+        // scale / center nicely
+        anim.setSpeed(1.0);
+      } catch(err){
+        console.warn('Lottie failed', err);
       }
-      const partGeo = new THREE.BufferGeometry();
-      partGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
-      partGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors,3));
-      const partMat = new THREE.PointsMaterial({ size: 0.014 * (window.devicePixelRatio||1), vertexColors:true, transparent:true, opacity:0.9});
-      points = new THREE.Points(partGeo, partMat);
-      scene.add(points);
-
-      resizeGlobe();
-      animateGlobe();
-    }
-
-    function resizeGlobe(){
-      const canvas = renderer.domElement;
-      const displayWidth  = canvas.clientWidth;
-      const displayHeight = canvas.clientHeight;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(displayWidth, displayHeight, false);
-      if (camera) {
-        camera.aspect = Math.max(displayWidth / Math.max(displayHeight,1), 1);
-        camera.updateProjectionMatrix();
-      }
-    }
-
-    function animateGlobe(){
-      requestAnimationFrame(animateGlobe);
-      if(globe) globe.rotation.y += 0.0036;
-      if(points) points.rotation.y -= 0.0009;
-      if(ring) ring.rotation.z += 0.002;
-      renderer.render(scene, camera);
-    }
-
-    window.addEventListener('DOMContentLoaded', ()=> {
-      try{ initGlobe(); } catch(err){ console.warn('three.js init error', err); }
     });
-    let resizeTimer;
-    window.addEventListener('resize', ()=> {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(()=> { try{ resizeGlobe(); } catch(e){} }, 120);
-    });
-
-    /* =========================
-       Small accessibility helpers
-       ========================= */
-    // Focus visible only for keyboard users
-    (function focusVisible(){
-      let hadKeyboardEvent = false;
-      window.addEventListener('keydown', (e) => { if(e.key === 'Tab') hadKeyboardEvent = true; }, true);
-      window.addEventListener('mousedown', ()=> { hadKeyboardEvent = false; }, true);
-      document.addEventListener('focusin', (e) => {
-        if(hadKeyboardEvent && e.target) e.target.classList.add('kbd-focus');
-      }, true);
-      document.addEventListener('focusout', (e) => { if(e.target) e.target.classList.remove('kbd-focus'); }, true);
-    })();
-
   </script>
 </body>
 </html>
